@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Blue: Missão Cósmica</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Tela de Loading -->
+    <div id="loading-screen" class="screen">
+        <div class="loading-content">
+            <div class="loading-avatar">
+                <div class="royal-blue-3d"></div>
+            </div>
+            <h2>Inicializando Missão Cósmica</h2>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loading-progress"></div>
+            </div>
+            <p id="loading-text">Carregando universo...</p>
+        </div>
+    </div>
+
+    <!-- Menu Principal -->
+    <div id="main-menu" class="screen hidden">
+        <div class="menu-content">
+            <div class="menu-header">
+                <div class="title-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h1>ROYAL BLUE</h1>
+                    <span class="subtitle">Missão Cósmica</span>
+                </div>
+            </div>
+
+            <div class="menu-options">
+                <button id="start-game" class="menu-btn primary">
+                    <i class="fas fa-play"></i>
+                    <span>Iniciar Missão</span>
+                </button>
+                <button id="continue-game" class="menu-btn secondary">
+                    <i class="fas fa-sync"></i>
+                    <span>Continuar Missão</span>
+                </button>
+                <button id="missions-btn" class="menu-btn">
+                    <i class="fas fa-tasks"></i>
+                    <span>Missões</span>
+                </button>
+                <button id="settings-btn" class="menu-btn">
+                    <i class="fas fa-cog"></i>
+                    <span>Configurações</span>
+                </button>
+            </div>
+
+            <div class="menu-stats">
+                <div class="stat-item">
+                    <span>Planetas Descobertos:</span>
+                    <strong id="menu-discovered">0/8</strong>
+                </div>
+                <div class="stat-item">
+                    <span>Missões Concluídas:</span>
+                    <strong id="menu-missions">0/4</strong>
+                </div>
+            </div>
+
+            <div class="menu-avatar">
+                <div class="royal-blue-talk">
+                    <div class="speech-bubble">
+                        <p id="menu-dialogue">Olá, explorador! Pronto para nossa aventura cósmica?</p>
+                    </div>
+                    <div class="royal-blue-character">
+                        <div class="mascot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jogo Principal -->
+    <div id="game-screen" class="screen hidden">
+        <!-- HUD do Jogo -->
+        <div class="game-hud">
+            <div class="hud-left">
+                <div class="player-info">
+                    <div class="health-bar">
+                        <span><i class="fas fa-heart"></i> Energia</span>
+                        <div class="bar">
+                            <div class="fill" id="health-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="oxygen-bar">
+                        <span><i class="fas fa-wind"></i> Oxigênio</span>
+                        <div class="bar">
+                            <div class="fill" id="oxygen-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="xp-bar">
+                        <span><i class="fas fa-star"></i> Nível 1</span>
+                        <div class="bar">
+                            <div class="fill" id="xp-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hud-center">
+                <div class="mission-info">
+                    <h3 id="current-mission">Missão: Explorar o Sistema Solar</h3>
+                    <div class="mission-progress">
+                        <span id="mission-progress">0% Completo</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="mission-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hud-right">
+                <div class="tools">
+                    <button class="tool-btn active" data-tool="scanner" title="Scanner Planetário">
+                        <i class="fas fa-satellite-dish"></i>
+                    </button>
+                    <button class="tool-btn" data-tool="collector" title="Coletor de Amostras">
+                        <i class="fas fa-vial"></i>
+                    </button>
+                    <button class="tool-btn" data-tool="camera" title="Câmera Espacial">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                    <button class="tool-btn" data-tool="analyzer" title="Analisador Científico">
+                        <i class="fas fa-microscope"></i>
+                    </button>
+                </div>
+                <div class="resource-display">
+                    <span id="resource-count">Amostras: 0</span>
+                    <span id="photo-count">Fotos: 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container do Universo 3D -->
+        <div id="universe-3d"></div>
+
+        <!-- Notificações -->
+        <div id="notification-center" class="notification-center"></div>
+
+        <!-- Controles de Navegação -->
+        <div class="navigation-controls">
+            <div class="movement-controls">
+                <div class="control-group">
+                    <button id="move-forward" class="control-btn" title="Mover para Frente (W)">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                </div>
+                <div class="control-group horizontal">
+                    <button id="move-left" class="control-btn" title="Mover para Esquerda (A)">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button id="move-back" class="control-btn" title="Mover para Trás (S)">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                    <button id="move-right" class="control-btn" title="Mover para Direita (D)">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="control-group">
+                    <button id="move-up" class="control-btn" title="Mover para Cima (Q)">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                    <button id="move-down" class="control-btn" title="Mover para Baixo (E)">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="action-controls">
+                <button id="interact-btn" class="action-btn" title="Interagir (F)">
+                    <i class="fas fa-hand-paper"></i>
+                    <span>Interagir</span>
+                </button>
+                <button id="boost-btn" class="action-btn boost" title="Propulsão (Espaço)">
+                    <i class="fas fa-rocket"></i>
+                    <span>Propulsão</span>
+                </button>
+                <button id="map-btn" class="action-btn" title="Mapa (M)">
+                    <i class="fas fa-map"></i>
+                    <span>Mapa</span>
+                </button>
+                <button id="menu-btn" class="action-btn" title="Menu (ESC)">
+                    <i class="fas fa-bars"></i>
+                    <span>Menu</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Diálogo com Royal Blue -->
+        <div id="dialogue-box" class="dialogue-system hidden">
+            <div class="dialogue-avatar">
+                <div class="mascot small"></div>
+            </div>
+            <div class="dialogue-content">
+                <h4>Royal Blue</h4>
+                <p id="dialogue-text">Bem-vindo ao Sistema Solar, explorador!</p>
+                <div class="dialogue-options" id="dialogue-options">
+                    <!-- Opções serão inseridas dinamicamente -->
+                </div>
+            </div>
+            <button id="close-dialogue" class="close-btn" title="Fechar (X)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Scanner de Planetas -->
+        <div id="planet-scanner" class="scanner hidden">
+            <div class="scanner-header">
+                <h3><i class="fas fa-satellite-dish"></i> Scanner Planetário</h3>
+                <div class="scanner-data">
+                    <div class="scan-item">
+                        <span>Nome:</span>
+                        <strong id="scan-name">-</strong>
+                    </div>
+                    <div class="scan-item">
+                        <span>Distância:</span>
+                        <strong id="scan-distance">-</strong>
+                    </div>
+                    <div class="scan-item">
+                        <span>Tipo:</span>
+                        <strong id="scan-type">-</strong>
+                    </div>
+                    <div class="scan-item">
+                        <span>Habitabilidade:</span>
+                        <strong id="scan-habitat">-</strong>
+                    </div>
+                    <div class="scan-item">
+                        <span>Temperatura:</span>
+                        <strong id="scan-temp">-</strong>
+                    </div>
+                    <div class="scan-item">
+                        <span>Gravidade:</span>
+                        <strong id="scan-gravity">-</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="scanner-visual">
+                <div class="scanning-animation"></div>
+                <div class="scan-status" id="scan-status">Pronto para escanear</div>
+            </div>
+        </div>
+
+        <!-- Analisador Científico -->
+        <div id="science-analyzer" class="scanner hidden">
+            <div class="scanner-header">
+                <h3><i class="fas fa-microscope"></i> Analisador Científico</h3>
+                <div class="scanner-data">
+                    <div class="scan-item">
+                        <span>Composição:</span>
+                        <strong id="analyzer-composition">-</strong>
+                    </div>
+                    <div class="scan-item">
+                        <span>Atmosfera:</span>
+                        <strong id="analyzer-atmosphere">-</strong>
+                    </div>
+                    <div class="scan-item">
+                        <span>Anéis:</span>
+                        <strong id="analyzer-rings">-</strong>
+                    </div>
+                    <div class="scan-item">
+                        <span>Luas:</span>
+                        <strong id="analyzer-moons">-</strong>
+                    </div>
+                    <div class="scan-item">
+                        <span>Curiosidade:</span>
+                        <em id="analyzer-funfact">-</em>
+                    </div>
+                </div>
+            </div>
+            <div class="analyzer-actions">
+                <button id="collect-sample" class="action-btn">
+                    <i class="fas fa-vial"></i> Coletar Amostra
+                </button>
+                <button id="take-photo" class="action-btn">
+                    <i class="fas fa-camera"></i> Fotografar
+                </button>
+            </div>
+        </div>
+
+        <!-- Mapa do Sistema Solar -->
+        <div id="solar-map" class="scanner hidden">
+            <div class="scanner-header">
+                <h3><i class="fas fa-map"></i> Mapa do Sistema Solar</h3>
+                <div class="scanner-data">
+                    <div class="scan-item">
+                        <span>Planetas Descobertos:</span>
+                        <strong id="discovered-count">0/8</strong>
+                    </div>
+                    <div id="planet-list" class="planet-list">
+                        <!-- Lista de planetas será inserida aqui -->
+                    </div>
+                </div>
+            </div>
+            <button id="close-map" class="close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Álbum de Fotos -->
+        <div id="photo-album" class="scanner hidden">
+            <div class="scanner-header">
+                <h3><i class="fas fa-camera"></i> Álbum de Fotos</h3>
+                <div class="photo-grid" id="photo-grid">
+                    <!-- Fotos serão inseridas aqui -->
+                </div>
+            </div>
+            <button id="close-album" class="close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tela de Missões -->
+    <div id="missions-screen" class="screen hidden">
+        <div class="missions-content">
+            <div class="missions-header">
+                <h2><i class="fas fa-tasks"></i> Missões Cósmicas</h2>
+                <button id="back-to-menu" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar
+                </button>
+            </div>
+
+            <div class="missions-stats">
+                <div class="stat-card">
+                    <h3>Progresso Geral</h3>
+                    <div class="stat-value" id="overall-progress">0%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>XP Total</h3>
+                    <div class="stat-value" id="total-xp">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Nível</h3>
+                    <div class="stat-value" id="player-level">1</div>
+                </div>
+            </div>
+
+            <div class="missions-list" id="missions-list-container">
+                <!-- Missões serão carregadas dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Configurações -->
+    <div id="settings-screen" class="screen hidden">
+        <div class="missions-content">
+            <div class="missions-header">
+                <h2><i class="fas fa-cog"></i> Configurações</h2>
+                <button id="back-to-menu-from-settings" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar
+                </button>
+            </div>
+            
+            <div class="settings-options">
+                <div class="setting-group">
+                    <h3>Áudio</h3>
+                    <div class="setting-item">
+                        <label>Música de Fundo</label>
+                        <button id="toggle-music" class="toggle-btn active">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
+                    <div class="setting-item">
+                        <label>Efeitos Sonoros</label>
+                        <button id="toggle-sfx" class="toggle-btn active">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
+                    <div class="setting-item">
+                        <label>Volume Geral</label>
+                        <input type="range" id="master-volume" min="0" max="100" value="70">
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <h3>Gráficos</h3>
+                    <div class="setting-item">
+                        <label>Qualidade</label>
+                        <select id="graphics-quality">
+                            <option value="low">Baixa</option>
+                            <option value="medium" selected>Média</option>
+                            <option value="high">Alta</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Fullscreen</label>
+                        <button id="toggle-fullscreen" class="toggle-btn">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <h3>Controles</h3>
+                    <div class="setting-item">
+                        <label>Sensibilidade do Mouse</label>
+                        <input type="range" id="mouse-sensitivity" min="1" max="10" value="5">
+                    </div>
+                    <div class="setting-item">
+                        <label>Velocidade de Movimento</label>
+                        <input type="range" id="movement-speed" min="1" max="10" value="5">
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <h3>Jogo</h3>
+                    <div class="setting-item">
+                        <button id="save-game-btn" class="menu-btn">
+                            <i class="fas fa-save"></i>
+                            Salvar Jogo
+                        </button>
+                    </div>
+                    <div class="setting-item">
+                        <button id="load-game-btn" class="menu-btn secondary">
+                            <i class="fas fa-folder-open"></i>
+                            Carregar Jogo
+                        </button>
+                    </div>
+                    <div class="setting-item">
+                        <button id="reset-game-btn" class="menu-btn danger">
+                            <i class="fas fa-trash"></i>
+                            Reiniciar Jogo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Quiz -->
+    <div id="quiz-screen" class="screen hidden">
+        <div class="missions-content">
+            <div class="quiz-header">
+                <h2><i class="fas fa-brain"></i> Quiz Cósmico</h2>
+                <div class="quiz-progress">
+                    <span id="quiz-progress">Pergunta 1/5</span>
+                </div>
+            </div>
+            
+            <div class="quiz-content">
+                <h3 id="quiz-question">Qual é o maior planeta do sistema solar?</h3>
+                <div class="quiz-options" id="quiz-options">
+                    <!-- Opções serão inseridas dinamicamente -->
+                </div>
+            </div>
+            
+            <div class="quiz-actions">
+                <button id="next-question" class="menu-btn primary hidden">
+                    <i class="fas fa-arrow-right"></i>
+                    Próxima Pergunta
+                </button>
+                <button id="finish-quiz" class="menu-btn primary hidden">
+                    <i class="fas fa-trophy"></i>
+                    Ver Resultado
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de Áudio -->
+    <audio id="background-music" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-space-game-668.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="discovery-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="click-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="boost-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-sparkle-2916.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="scan-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-scanner-904.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="photo-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-camera-shutter-click-1131.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Three.js e Dependências -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- Sistema Principal do Jogo -->
+    <script src="script.js"></script>
+</body>
+</html>
